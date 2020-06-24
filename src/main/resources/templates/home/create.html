@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Home</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	rel="stylesheet" id="bootstrap-css">
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.min.css">
+
+
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- datatable -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"
+	integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+	integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+	crossorigin="anonymous"></script>
+<!-- ------- -->
+<script
+	src="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+<script
+	src="https://cdn.datatables.net/plug-ins/9dcbecd42ad/integration/jqueryui/dataTables.jqueryui.js"></script>
+<link rel="stylesheet"
+	href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/plug-ins/9dcbecd42ad/integration/jqueryui/dataTables.jqueryui.css">
+
+<link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+	<div class="fixed-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-6 left">
+					<h2>Forum: Lecture Forum</h2>
+					<h5>In a thread, you can view the information of the post,delete
+				and update the post</h5>
+					<div class="loader">
+						<a th:href="@{/create}"><button>Create Thread</button></a>
+					</div>
+
+				</div>
+
+				<!-- <! RIGHT SIDE !> -->
+				<div class="col-xs-6 right" style="text-align: right">
+					<input type=text th:value="${userid}" id="userid" hidden />
+					<p th:utext="${userName}"></p>
+					<a th:href="@{/logout}" style="text-align: right">logout</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="sidenav">
+			<a href="/home/home">Home</a> <a href="/views">Discussions</a>
+		</div>
+		<div class="main">
+			<div class="alert alert-success" role="alert" th:if="${msg}"
+				th:utext="${msg}"></div>
+
+			<form class="form-horizontal" role="form" method="POST"
+				th:action="@{/createThread}" th:object="${userthread}"
+				style="width: 50%">
+
+				<h1 class="h3 mb-3 font-weight-normal">Create Thread</h1>
+				<label for="inputSubject" class="sr-only">*Subject</label>*Subject:
+				<input type="text" id="subject" name="subject" class="form-control"
+					placeholder="Subject" required autofocus autocomplete="off"> <br>
+				<br> <label for="inputMessage" class="sr-only">Message</label>Message
+				<textarea id="message" name="message" class="form-control"
+					placeholder="Message" required autocomplete="off"></textarea>
+				<br>
+				<br>
+				<button class="btn btn-lg btn-primary btn-block" type="submit"
+					id="submit">Submit</button>
+			</form>
+		</div>
+	</div>
+	<div class="fixed-footer">
+		<div class="container">2020 Lecture Forum</div>
+	</div>
+</body>
+</html>

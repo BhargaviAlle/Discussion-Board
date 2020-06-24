@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Home</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	rel="stylesheet" id="bootstrap-css">
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.min.css">
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- datatable -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"
+	integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+	integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+	crossorigin="anonymous"></script>
+<!-- ------- -->
+<script
+	src="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+<script
+	src="https://cdn.datatables.net/plug-ins/9dcbecd42ad/integration/jqueryui/dataTables.jqueryui.js"></script>
+<link rel="stylesheet"
+	href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/plug-ins/9dcbecd42ad/integration/jqueryui/dataTables.jqueryui.css">
+
+
+<link rel="stylesheet" href="/css/common.css">
+
+</head>
+<body>
+    <div class="fixed-header">
+      <div class="container">  
+         <div class="row">
+        <div class="col-xs-6 left">
+         <h2>Forum: Lecture Forum</h2>
+			<h5>In a thread, you can view the information of the post,delete
+				and update the post</h5>
+         <div class="loader"><a th:href="@{/create}"><button>Create
+					Thread</button></a></div> 
+		            
+        </div>
+
+    <!-- <! RIGHT SIDE !> -->
+        <div class="col-xs-6 right" style="text-align:right"> 
+          <input type=text th:value="${userid}" id="userid" hidden />
+          <p th:utext="${userName}"></p>
+          <a th:href="@{/logout}" style="text-align:right">logout</a>
+        </div>  
+    </div>
+        </div>
+    </div>
+    <div class="container">
+    <div class="sidenav">
+  <a href="/home/home">Home</a>
+  <a href="/views">Discussions</a>
+</div>
+<div class="main">
+<div style="text-align:right"><input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"></div>
+<br>
+       	<table id="myTable">
+			<thead>
+				<tr>
+					<th>Created Date</th>
+					<th>Subject</th>
+					<th>Message</th>
+					<th>Author</th>
+					<th>Posts</th> 
+					<th>Action</th>	
+				</tr>
+			</thead>
+			<tbody id="table-body"></tbody>
+		</table><br>
+
+    <div id="pagination-wrapper"></div>
+
+    	</div>
+ 
+      </div> 
+    <div class="fixed-footer">
+        <div class="container">2020 Discussion Lecture Forum</div>        
+    </div>
+</body>
+<script src="/js/myscript.js"></script>
+
+<script type="text/javascript">
+
+ function parseJsonDate(jsonDateString){
+	 
+	 var date = new Date(jsonDateString);
+	 var hours = date.getHours();
+	  var minutes = date.getMinutes();
+	  var ampm = hours >= 12 ? 'pm' : 'am';
+	  hours = hours % 12;
+	  hours = hours ? hours : 12; // the hour '0' should be '12'
+	  minutes = minutes < 10 ? '0'+minutes : minutes;
+	  var strTime = hours + ':' + minutes + ' ' + ampm;
+	 // return strTime;
+	 console.log(strTime);
+	 
+	 var str = date.getMonth()+1 + '/'+ date.getDate() + '/' + date.getFullYear() + ' ' +strTime;  // deprecated! use toUTCString()
+	// console.log(date.toString)//date.toString('YYYY-MM-dd')	 
+	 return str;
+} 
+
+$(document).ready(function() {
+	//alert('1'+window.location+"id" + $('#userid').val());
+	var userid=$('#userid').val();
+
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			url : "http://localhost:8080/lectureforummodel/"+userid,
+			success : function(response) {
+				//debugger;
+			console.log(response);
+			var data=response;
+						
+			var state = {
+				    'querySet': data,
+
+				    'page': 1,
+				    'rows': 5,
+				    'window': 5,
+				}
+
+				buildTable()
+
+				function pagination(querySet, page, rows) {
+
+				    var trimStart = (page - 1) * rows
+				    var trimEnd = trimStart + rows
+
+				    var trimmedData = querySet.slice(trimStart, trimEnd)
+
+				    var pages = Math.round(querySet.length / rows);
+
+				    return {
+				        'querySet': trimmedData,
+				        'pages': pages,
+				    }
+				}
+
+				function pageButtons(pages) {
+				    var wrapper = document.getElementById('pagination-wrapper')
+
+				    wrapper.innerHTML = ``
+					console.log('Pages:', pages)
+
+				    var maxLeft = (state.page - Math.floor(state.window / 2))
+				    var maxRight = (state.page + Math.floor(state.window / 2))
+
+				    if (maxLeft < 1) {
+				        maxLeft = 1
+				        maxRight = state.window
+				    }
+
+				    if (maxRight > pages) {
+				        maxLeft = pages - (state.window - 1)
+				        
+				        if (maxLeft < 1){
+				        	maxLeft = 1
+				        }
+				        maxRight = pages
+				    }
+				    
+				    
+
+				    for (var page = maxLeft; page <= maxRight; page++) {
+				    	wrapper.innerHTML += `<button value=${page} class="page btn btn-sm btn-info">${page}</button>`
+				    }
+
+				    if (state.page != 1) {
+				        wrapper.innerHTML = `<button value=${1} class="page btn btn-sm btn-info">&#171; First</button>` + wrapper.innerHTML
+				    }
+
+				    if (state.page != pages) {
+				        wrapper.innerHTML += `<button value=${pages} class="page btn btn-sm btn-info">Last &#187;</button>`
+				    }
+
+				    $('.page').on('click', function() {
+				        $('#table-body').empty()
+
+				        state.page = Number($(this).val())
+
+				        buildTable()
+				    })
+
+				}
+				
+
+				function buildTable() {
+				    var table = $('#table-body')
+
+				    var data = pagination(state.querySet, state.page, state.rows)
+				    var myList = data.querySet
+				 //   alert(myList.length());
+				    for (var i = 1 in myList) {
+				        //Keep in mind we are using "Template Litterals to create rows"
+				        var row = `<tr>
+				                  <td>${parseJsonDate(myList[i].created_date)}</td>
+				                  <td><a href=/reply/${myList[i].sno}>${myList[i].subject}</td>
+				                  <td>${myList[i].message}</td>
+				                  <td>${myList[i].authorname}</td>
+				                  <td>${myList[i].discussionsCount}</td>
+				                  <td><button><a href=/edit/${myList[i].sno}>Edit</button>&nbsp;<button><a href=/deleteThread/${myList[i].sno}>Delete</a></button></td>
+				                  
+				                  `
+				        table.append(row)
+				    }
+
+				    pageButtons(data.pages)
+				}			
+			},
+			error: function (e) {
+				alert("error" +e);
+				console.log("ERROR: ", e);
+			}
+		});
+	
+}); 
+</script>
+
+</html>

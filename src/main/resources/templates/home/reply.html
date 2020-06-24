@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Home</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	rel="stylesheet" id="bootstrap-css">
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.min.css">
+
+
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- datatable -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"
+	integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+	integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+	crossorigin="anonymous"></script>
+<!-- ------- -->
+<script
+	src="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+<script
+	src="https://cdn.datatables.net/plug-ins/9dcbecd42ad/integration/jqueryui/dataTables.jqueryui.js"></script>
+<link rel="stylesheet"
+	href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/plug-ins/9dcbecd42ad/integration/jqueryui/dataTables.jqueryui.css">
+
+<link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+
+	<div class="fixed-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-6 left">
+					<h2>Forum: Lecture Forum</h2>
+					<h5>In a thread, you can view the information of the
+						post,delete and update the post</h5>
+					<div class="loader">
+						<a th:href="@{/create}"><button>Create Thread</button></a>
+					</div>
+				</div>
+
+				<!-- <! RIGHT SIDE !> -->
+				<div class="col-xs-6 right" style="text-align: right">
+					<input type=text th:value="${userid}" id="userid" hidden />
+					<p th:utext="${userName}"></p>
+					<a th:href="@{/logout}" style="text-align: right">logout</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="sidenav">
+			<a href="/home/home">Home</a> <a href="/views">Discussions</a>
+		</div>
+		<div class="main">
+			<input type="text" name="sno" id="sno" th:value="${sno}" hidden />
+			<!-- <input type="text" name="userid" id="userid" th:value="${userthread.userid}" /> -->
+
+			<div class="container div-container">
+				<div class="row">
+					<div class="col-xs-6 left">
+						<p class="p-name">
+							<img src="/images/images.png" alt="IMG"><span
+								th:utext="${userthread.authorname}"> </span><br>
+							<span th:utext="${userthread.subject}"></span>
+							
+							<!-- <span th:utext="${userthread.userid}"></span> -->
+							
+						</p>
+						<input type="text" th:value="${userthread.userid}" hidden />
+					</div>
+				</div>
+				<div class="col-xs-6 right" style="text-align: right">
+				<!-- <span th:utext="${userthread.created_date}" ></span> -->
+					<button th:id="${userthread.userid}" onclick="openForm(this.id)">Reply</button>
+					
+				</div>
+			</div>
+
+			<div id="table_id"></div>
+			
+			<div class="form-popup" id="myForm">
+				<form class="form-container" role="form1" method="POST"
+					th:object="${reply_thread}" th:action="@{/insertReply/__${sno}__}"
+					style="width: 50%">
+
+					<h1>
+						<span th:utext="${userthread.subject}"></span>
+					</h1>
+					<label for="inputSubject" class="sr-only">*Subject</label>*Subject
+					<input type="text" id="subject" name="subject" class="form-control"
+						th:value="${userthread.subject}" placeholder="Subject" readonly>
+					<br> <br> <label for="inputMessage" class="sr-only">Message</label>Message
+					<textarea id="message" name="message" class="form-control"
+						placeholder="Message" required></textarea>
+					<input type="text" id="replyto" name="replyto" hidden> <br>
+					<br>
+					<button class="btn btn-lg btn-primary btn-block" type="submit"
+						id="submit">
+						Submit</a>
+					</button>
+					<button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="fixed-footer">
+		<div class="container">2020 Lecture Forum</div>
+	</div>
+</body>
+<script type="text/javascript">
+
+function openForm(event) {
+	//alert(event);
+	//var dt=data;
+	  document.getElementById("myForm").style.display = "block";
+	  $('#replyto').val(event);
+	}
+
+	function closeForm() {
+	  document.getElementById("myForm").style.display = "none";
+	}
+
+
+$(document).ready(function() {
+	var sno= $('#sno').val();
+	//alert("http://localhost:8080/getAllRepliedThreads/"+sno);
+	var url="http://localhost:8080/getAllRepliedThreads/"+sno;
+	$.ajax({
+		type: "GET",
+		contentType: "application/json",
+		url : url,
+		success : function(response) {
+		console.log(response);	
+		var data=response;
+		
+		 var htmlText = data.map(function(o){
+			  return `
+			      <div class="container div-container">
+			  <div class="row">
+			  <div class="col-xs-6 left">
+			  <img src="/images/images.png" alt="IMG"> ${o.authorname}
+			  <p class="p-name"> <br> ${o.message} </p>
+			      </div>
+			      <div class="col-xs-6 right" style="text-align:right"> 
+			      <button id=${o.reply_user_id} onclick="openForm(this.id)">Reply</button>
+			      <br>
+			     
+			      ${parseJsonDate(o.created_date)}
+			      </div>
+			      </p>	
+			      </div>
+			     </div>
+			  `;
+			});
+
+			$('#table_id').append(htmlText);
+		 
+		
+		},
+		error: function (e) {
+			alert("error" +e);
+			console.log("ERROR: ", e);
+		}
+	});
+})
+
+
+function parseJsonDate(jsonDateString){
+	 
+	 var date = new Date(jsonDateString);
+	 var hours = date.getHours();
+	  var minutes = date.getMinutes();
+	  var ampm = hours >= 12 ? 'pm' : 'am';
+	  hours = hours % 12;
+	  hours = hours ? hours : 12; // the hour '0' should be '12'
+	  minutes = minutes < 10 ? '0'+minutes : minutes;
+	  var strTime = hours + ':' + minutes + ' ' + ampm;
+	 // return strTime;
+	 console.log(strTime);
+	 
+	 var str = date.getMonth()+1 + '/'+ date.getDate() + '/' + date.getFullYear() + ' ' +strTime;  // deprecated! use toUTCString()
+	// console.log(date.toString)//date.toString('YYYY-MM-dd')	 
+	 return str;
+} 
+
+</script>
+</html>
